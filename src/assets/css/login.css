@@ -1,104 +1,245 @@
- 
-  
-  .fs13{
-    font-size: 13px;
-  }
-  .form-btn{
-    background-color: #0275d8;
-    color:white
-  }
-  .form-btn:hover{
-    background-color:white;
-    color: black;
-  }
-  .login-btn{
-    width: 15%;
-    margin-left: 100px;
-  }
-/*   
-  input[type=button], input[type=submit], input[type=reset]  {
-    background-color: #56baed;
-    border: none;
-    color: white;
-    padding: 15px 80px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    text-transform: uppercase;
-    font-size: 13px;
-    -webkit-box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-    box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-    margin: 5px 20px 40px 20px;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
-  }
-  
-  input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover  {
-    background-color: #39ace7;
-  }
-  
-  input[type=button]:active, input[type=submit]:active, input[type=reset]:active  {
-    -moz-transform: scale(0.95);
-    -webkit-transform: scale(0.95);
-    -o-transform: scale(0.95);
-    -ms-transform: scale(0.95);
-    transform: scale(0.95);
-  } */
-/*   
-  input[type=text] {
+.music-component{
+    position: absolute;
+    height: 40%;
+    width: 30%;
+    right:2%;
+    bottom:5px;
+    background-color:rgba(0,0,0,.8);
+    border-radius: 5%;
+    padding: 1%;
+    z-index: 1000;
+}
+
+.overflowScroll{
+    overflow    : auto;
+}
+
+.noscroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.noscroll {
    
-    border: none;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 15px;
-    margin: 5px;
-    width: 85%;
-    border: 2px solid #f6f6f6;
-    -webkit-transition: all 0.5s ease-in-out;
-    -moz-transition: all 0.5s ease-in-out;
-    -ms-transition: all 0.5s ease-in-out;
-    -o-transition: all 0.5s ease-in-out;
-    transition: all 0.5s ease-in-out;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-  }
-  
-  input[type=password] {
-    background-color: #efefef;
-    border: none;
-    color: #0d0d0d;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 5px;
-    width: 85%;
-    border: 2px solid #f6f6f6;
-    -webkit-transition: all 0.5s ease-in-out;
-    -moz-transition: all 0.5s ease-in-out;
-    -ms-transition: all 0.5s ease-in-out;
-    -o-transition: all 0.5s ease-in-out;
-    transition: all 0.5s ease-in-out;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-  }
-  input[type=text]:focus {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.music-list{
+    height:200px;
+}
+
+.c-pointer{
+    cursor: pointer;
+}
+
+.MusicIcon{
+    position: absolute;
+        height: 60px;
+        width: 60px;
+    right:2%;
+    bottom:2%;
+    background-color:rgba(0,0,0,.8);
+    padding: 10px;
+    border-radius: 30px;
+    transition: background-color 1s;
+}
+.root{
+    width: 100%;
+    height: 100%;
+}
+.loginMain-container{
+    width: 100%;
+    height: 100%;
+}
+.loginContainer{
+    border-radius: 10px;
+    background-color: white;
+    margin: auto;
+    padding: 4%;
+    margin: 0;
+    position: absolute;
+    top: 20%;
+    left: 34%;
+}
+
+.notePadContainer{
+   position: absolute;
+   width: 100%;
+   height: 100%; 
+   background-color:black;
+   opacity: 0.92;
+}
+
+.notePadBody{
+    padding: 2%;
+    margin: 0;
+    width:50%;
+    height:70%;
+    position: absolute;
+    top: 16%;
+    left: 25%;
+    border: 1px solid;
+    border-radius: 20px;
+    opacity: 1;
+    background-color: white;
+    z-index: 1000;
+    display: block;
     
-    border-bottom: 2px solid #5fbae9;
-  } */
-  
- 
-  
-  
-  .h550{
-    height: 549px;
+}
+
+.noteBody{
+    height: 70%;
+    overflow-x: auto;
+    margin-bottom: 4%;
+    opacity: 1;
+}
+
+.floatBottom{
+    position: absolute;
+    bottom:0;
+    margin: 2%;
+}
+
+.NoteIcon{
+position: absolute;
+height: 60px;
+width: 60px;
+right:2%;
+bottom:10%;
+background-color:rgba(0,0,0,.8);
+padding: 15px;
+border-radius: 30px;
+transition: background-color 1s;
+
+}
+
+.imageComponent{
+    margin:1%;
+    margin-top: 5%;
+    position: absolute;
+    height: 530px;
+    border:1px solid black;
+}
+.galleryComponent{
+    position: absolute;
+    bottom: 0px;
+    margin-bottom: 5%;
+    margin:1% ;
+    height: 200px;
+    width: 92%;
+    overflow-y:auto ;
+    white-space:nowrap;
+}
+
+.imgSize{
+    height:160px;
+    width:180px;
+    margin: 1%;
+}
+
+.imgSize:hover {
+    transform: scale(1.2); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+  }
+
+.galleryComponent::-webkit-scrollbar {
+    display: none;
   }
   
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .galleryComponent {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+
+  .chat-app{
+        position: absolute  ;
+        top:50px;
+        right: 5%;
+        width: 30%;
+        height: 90%;
+        border:1px solid;
+        padding: 1%;
+        overflow:auto;
+        border-radius: 20px;
+        margin: 1%;
+        background: rgba(5, 0, 0, 0.9);
+        opacity: 0.6;
+  }
+  .chat-app::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .chat-app {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .channel-listComponent{
+    overflow-y:auto ;
+    white-space:nowrap;
+    max-height: 15%;
+    padding: 1%;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+
+.channel-listComponent::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .channel-listComponent {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .channel-item{
+      margin: 2px;
+      padding: 1%;
+    
+  }
+
+  .messages-panel{
+  
+      border-radius: 10px;
+      height: 68%;  
+      padding: 1%;
+  }
+
+  .meesages-list{
+
+       height: 90%;
+       overflow-y: auto;
+       overflow-x: hidden;
+  }
+.meesages-list{
+    background-color: rgba(223, 222, 222, 0.2);
+    border-radius: 10px;
+    color: whitesmoke;
+}
+
+.message-time{
+    font-size: 12px;
+}
+.message-name{
+    font-size: 13px;
+}
+.message-body{
+    font-size: 14px;
+  
+}
+.floatRight{
+    text-align: end;
+}
+
+.ToolBar{
+    position: absolute;
+    bottom: 1%;
+    right: 1%;
+  }
+  .icon{
+    border-radius: 15px;
+    background-color: rgba(0, 174, 255, 0.9);
+    margin: 10px;
+    padding: 10px;
+  }

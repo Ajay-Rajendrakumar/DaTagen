@@ -1,5 +1,8 @@
 import thunk from 'redux-thunk';
+import {withRouter} from 'react-router';
 import { applyMiddleware, createStore } from 'redux';
  import { reducer } from "./reducers/index";
 
-export default createStore(reducer, applyMiddleware(thunk));
+ let store=createStore(reducer, applyMiddleware(thunk))
+
+export default withRouter(store);

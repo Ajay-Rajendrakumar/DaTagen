@@ -1,65 +1,49 @@
 
 import './App.css';
 import React, { Component } from 'react';
-import { Router, Route, Switch } from "react-router-dom";
+import { Router, Route, Switch,BrowserRouter } from "react-router-dom";
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import { createBrowserHistory } from 'history';
-import store from './store/store';
+import Store from './store/store';
 import Layout from './layouts/index';
 
-import Ex1 from './views/excercise1.js';
-import Ex2 from './views/excercise2.js';
-import Ex3 from './views/excercise3.js';
+import Login from './views/Authentication/Login.js';
+import Dashboard from './views/dashBoard.js'
+import Header from './layouts/header.js'
+import { Chat } from './views/chat/Chat.js';
 
-import Ex4 from './views/portal/loginPage.js';
-
-const history = createBrowserHistory();
+const history = createBrowserHistory({forceRefresh:true});
 
 function App() {
   return (
-    <Provider store={store}>
-        <Router history={history} exact path="/">
+    <Provider store={Store}>
+        <Router history={history} >
           <main className="h-100">
+          <BrowserRouter>
             <Switch>
-              <Route exact={true} path="/Ex1" render={() => (
+           
+            <Route exact={true} path="/" render={() => (
                 <>
-                  <Layout page={"Service Oriented Architecture & WebServices (Excercise:1)"}/>
-                    <div className="main" >
-                      <Ex1 />
+                    <div className="mainContainer" >
+                      <Login  />
                     </div>
                 </>
               )}
               />
-              <Route exact={true} path="/Ex2" render={() => (
+              <Route exact={true} path="/dashboard" render={() => (
                 <>
-                  <Layout page={"Service Oriented Architecture & WebServices (Excercise:2)"}/>
-                    <div className="main" >
-                      <Ex2 />
+                    <div className="mainContainer" >
+                      <Header page="PiXlr"/>
+                      <Dashboard  />
                     </div>
                 </>
               )}
               />
-              <Route exact={true} path="/Ex3" render={() => (
-                <>
-                  <Layout page={"Service Oriented Architecture & WebServices (Excercise:3)"}/>
-                    <div className="main" >
-                      <Ex3 />
-                    </div>
-                </>
-              )}
-              />
-              <Route exact={true} path="/" render={() => (
-                <>
-                  <Layout page={"Service Oriented Architecture & WebServices (Excercise:4)"}/>
-                    <div className="main" >
-                      <Ex4 />
-                    </div>
-                </>
-              )}
-              />
+            
             </Switch>
             <ToastContainer />
+            </BrowserRouter>
           </main>
         </Router>
       </Provider>

@@ -1,45 +1,30 @@
 import * as types from './types';
-import { pythonUrl,phpUrl,jsUrl } from '../../config';
+import { pythonUrl } from '../../config';
 import Axios from 'axios';
 
 let api={
-  "1":"dateDifference",
-  "2":"setOperations",
-  "3":"matrixOperation",
-  "4":"wordCurrencyConvertion",
-  "5":"rsaEncrypt",
-  "6":"md5Algorithm",
-  "7":"generateBarcode",
-  "8":"generateQrcode",
-  "9":"generateOTP",
-  "10":"generateCaptcha",
-  "Variance and Standard Deviation":"variance",
-  "Linear Regression":"linearRegression",
-  "GCF and LCM":"CalculateLcmGcf",
-  "Square and Cube root":"CalculateRoot",
-  "Nth root":"nthRoot",
-  "trignomentry":"trignomentryFunction",
-  "Logarithm":"CalculateLog",
-  "AntiLogarithm":"CalculateAntiLog",
-  "Electric Convertion":"electricConvertion",
-  "huffman_technique":"huffman_technique",
-  "run_length_algorithm":"run_length_algorithm",
-  "Lempel_Ziv_Welch":"Lempel_Ziv_Welch",
-  "Lossless_Compressions":"Lossless_Compressions",
-
-  "Portal_login":"Portal_login",
-  "Portal_register":"Portal_register",
-  "Portal_read":"Portal_read",
-  "Portal_changePwd":"Portal_changePwd",
+  "musicList":"musicList",
+  "getSong":"getSong",
+  "uploadSong":"uploadSong",
+  "createUser":"createUser",
+  "loginUser":"loginUser",
+  "addNote":"addNote",
+  "updateNote":"updateNote"
 }
  
 
 
-export const distributer = (data,question,backend) => {
+export const distributer = (data,apiName) => {
   return function action(dispatch) {
-    console.log(backend)
-    let url=urlLoader(backend,question)
+   
+    let url=urlLoader("Python",apiName)
     console.log(url)
+    if(url.includes(undefined)){
+      url=pythonUrl+"/"+apiName
+      console.log("here")
+    }
+    console.log(url)
+
     return Axios.post(url,data).then(res => {
       let response = res['data']
       return response
@@ -54,9 +39,9 @@ function urlLoader(backend,question) {
   if(backend==="Python"){
     url= pythonUrl
   }else  if(backend==="PHP"){
-    url= phpUrl
+    url= ""
   }else{
-    url= jsUrl
+    url= ""
   }
   url=url +"/"+ api[question]
   if(backend==="PHP"){

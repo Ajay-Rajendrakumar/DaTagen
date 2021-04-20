@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import logo from "../assets/img/WhiteLogo.png"
 import * as types from "../store/actions/types";
 
  class sidemenu extends Component {
@@ -24,7 +23,7 @@ import * as types from "../store/actions/types";
         let {showSideBar}={...this.state}
         return (
             <div className="side-menu ">
-                <div className="logo-placeholder p-1">
+                {/* <div className="logo-placeholder p-1">
                 <span className="logo ml-n1 c-pointer"  onClick={e => {showSideBar && this.props.history.push("/userDetails")}}>
                             <img  src={logo} alt="Reas-Logo"  className="ReasLogo"/>
                         </span>
@@ -47,7 +46,7 @@ import * as types from "../store/actions/types";
                         <span className="ml-3"> Assessments</span>
                 </div>
             </div>
-                </>}
+                </>} */}
             </div >
         );
     }
