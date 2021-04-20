@@ -5,7 +5,7 @@ import { Router, Route, Switch,BrowserRouter } from "react-router-dom";
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import { createBrowserHistory } from 'history';
-import Store from './store/store';
+import Store from './store/store.js';
 import Layout from './layouts/index';
 
 import Login from './views/Authentication/Login.js';

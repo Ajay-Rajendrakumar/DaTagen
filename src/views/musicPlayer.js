@@ -128,24 +128,24 @@ class Music extends Component {
     render() {
         let {musicList,selectedFile,fileName,currentPlaying,currentSongSrc,expandMusicPlayer,playing}={...this.state}
         return (
-                <div>
+                <div className="">
                  {currentSongSrc && <audio  id="musicElement" controls autoplay hidden >
                     <source src={currentSongSrc} type="audio/mpeg"/>
                 </audio>}
-        
+            { expandMusicPlayer?
             
             <div className="music-component">
                <div className="row m-1">
                 <div className="col-11 d-flex justify-content-center"><span className="font-weight-bold text-white h3">Music</span>
                     {currentSongSrc?
                          playing?
-                        <i className="fa fa-pause fa-2x text-white ml-3 mt-n1" aria-hidden="true" onClick={e=>this.PlayPause()}></i>:
-                        <i className="fa fa-play fa-2x text-white ml-3 mt-n1" aria-hidden="true" onClick={e=>this.PlayPause()}></i>
+                        <i className="fa fa-pause fa-2x text-white ml-3 mt-1" aria-hidden="true" onClick={e=>this.PlayPause()}></i>:
+                        <i className="fa fa-play fa-2x text-white ml-3 mt-1" aria-hidden="true" onClick={e=>this.PlayPause()}></i>
                         :""
                     }
                 
                 </div>
-                    <div className="col-1" ><i className="text-white fa fa-minus-square fa-lg" aria-hidden="true" onClick={e=>this.props.onClose()}></i></div>
+                    <div className="col-1" ><i className="text-white fa fa-minus-square fa-lg c-pointer" aria-hidden="true" onClick={e=>this.setState({expandMusicPlayer:!expandMusicPlayer})}></i></div>
                 </div> 
                
 
@@ -179,9 +179,12 @@ class Music extends Component {
                 </div>
                 
                 </div>
-            </div>
+            </div>:""
+            }
         
-        
+                <i className={"fa fa-music fa-2x "+(playing?" text-danger":" text-white")} aria-hidden="true" onClick={e=>this.setState({expandMusicPlayer:!expandMusicPlayer})}></i>
+           
+            
             </div>
         );
     }

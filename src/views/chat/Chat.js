@@ -67,7 +67,7 @@ class Chat extends Component {
         this.setState({ channel,currrentChannel:name });
         let obj={
             "id":id,
-            "user":this.props.logUser['name']
+            "user":this.props.user
         }
         this.setState({userId:this.socket.id})
         this.socket.emit('channel-join',obj, ack => {
@@ -78,7 +78,7 @@ class Chat extends Component {
 
     handleSendMessage = (channel_id, text) => {
         let user={
-            "name":this.props.logUser['name'],
+            "name":this.props.user,
         }
         this.socket.emit('send-message', { channel_id, text, senderName: this.socket.id, id: Date.now(),user:user });
     }
@@ -87,8 +87,8 @@ class Chat extends Component {
 
         return (
             <div className='chat-app'>
-                <div className="row "><span className="text-primary font-weight-bold text-center col h4-12">Chat</span></div>
-                <div className="row "><span className="text-primary font-weight-bold ml-3 col-4">Channel List</span></div>
+                <div className="row "><span className="text-primary font-weight-bold text-warning col-12 h4 text-center">Chat</span></div>
+                <div className="row "><span className="text-primary font-weight-bold ml-3 col-4 mb-1">Channel List</span></div>
                 <ChannelList channels={this.state.channels} onSelectChannel={this.handleChannelSelect} />
                 <hr className="bg-light flex"></hr>
                 <div className="text-light mt-n2 flex text-center font-weight-bold h6">Channel: {this.state.currrentChannel || '-'}</div>

@@ -21,15 +21,27 @@ print("Opened database successfully")
 #    print("PASSWORD = ", row[2])
 
 
-conn.execute('''CREATE TABLE NOTES
+# conn.execute('''CREATE TABLE NOTES
+#          (ID INT PRIMARY KEY     NOT NULL,
+#          NOTE           CHAR(200),
+#          STATUS         CHAR(200),
+#          ISDELETE       INT ,
+#          DATE           CHAR(100)
+#          );''')
+# conn.execute("INSERT INTO NOTES (ID,NOTE,STATUS,ISDELETE,DATE) \
+#      VALUES (1, 'Complete The upload', 'pending',0,'date')")
+conn.execute('''DROP TABLE REMINDER''')
+conn.execute('''CREATE TABLE REMINDER
          (ID INT PRIMARY KEY     NOT NULL,
-         NOTE           CHAR(200),
+         REMINDER           CHAR(200),
          STATUS         CHAR(200),
          ISDELETE       INT ,
-         DATE           CHAR(100)
+         DATE           CHAR(100),
+         TIME           CHAR(100),
+         RECIEVER   CHAR(500)
          );''')
-conn.execute("INSERT INTO NOTES (ID,NOTE,STATUS,ISDELETE,DATE) \
-     VALUES (1, 'Complete The upload', 'pending',0,'date')")
+conn.execute("INSERT INTO REMINDER (ID,REMINDER,STATUS,ISDELETE,DATE,TIME) \
+     VALUES (1, 'Complete', 'pending',0,'null','null')")
 
 conn.commit()
 conn.close()

@@ -36,8 +36,12 @@ class Login extends Component {
              if(!formType){
               
                  this.setState({logged_user:data},()=>{
-                    console.log(this.state.logged_user)
-                    this.props.history.push("/dashboard");
+                    // console.log(this.state.logged_user)
+                    // this.props.history.push("/dashboard");
+                    this.props.history.push({
+                        pathname: '/dashboard',
+                        state: { logUser: data }
+                      })
                   })
                  
              }else{

@@ -19,6 +19,7 @@ import {pythonUrl} from '../config.js'
 import 'react-jinke-music-player/assets/index.css'
 import MusicPlayer from './musicPlayer'
 import NotePad from './notePad';
+import Reminder from './reminders';
 import Chat from './chat/Chat.js'
 
 class Dashboard extends Component {
@@ -37,8 +38,8 @@ class Dashboard extends Component {
         }
     }
     componentDidMount(){
-    console.log(this.props.logged_user,this.props)
-     
+    console.log(this.props.location.state)
+     this.setState({logUser:this.props.location.state.logUser && this.props.location.state.logUser.name || "User"})
      
     }
     
@@ -75,28 +76,31 @@ class Dashboard extends Component {
         }
     
     render() {
-        let {curImage,notepad,music,chat}={...this.state}
+        let {curImage,notepad,music,chat,logUser,remider}={...this.state}
         return (
             <div className="">
                    {chat &&
-                    <Chat/>
+                    <Chat user={logUser}/>
                    }
                     
-                   {music &&
-                    <MusicPlayer 
-                         onClose={e=>this.setState({music:!music})}
-                    />
-                   }
+                  
                     {notepad &&
                         <NotePad 
                             onClose={e=>this.setState({notepad:!notepad})}
                         
                         />
                     }
+                    {remider &&
+                        <Reminder 
+                            onClose={e=>this.setState({remider:!remider})}
+                        
+                        />
+                    }
                     <div class="ToolBar d-flex flex-column bd-highlight mb-3">
-                        <div class="p-2 bd-highlight icon"><i className="fa fa-music fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({music:!music})}></i></div>
+                        <div class="p-2 bd-highlight icon"><MusicPlayer onClose={e=>this.setState({music:!music})}/></div>
                         <div class="p-2 bd-highlight icon"><i className="fa fa-sticky-note-o fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({notepad:!notepad})}></i></div>
                         <div class="p-2 bd-highlight icon"><i className="fa fa-comments fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({chat:!chat})}></i></div>
+                        <div class="p-2 bd-highlight icon"><i className="fa fa-bell fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({remider:!remider})}></i></div>
                     </div>
                     {/* <div className="MusicIcon">
                               <i className="fa fa-music fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({music:!music})}></i>

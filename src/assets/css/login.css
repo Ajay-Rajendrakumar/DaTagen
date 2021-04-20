@@ -1,9 +1,9 @@
 .music-component{
-    position: absolute;
+    position: fixed;
     height: 40%;
     width: 30%;
-    right:2%;
-    bottom:5px;
+    right:5%;
+    bottom:2%;
     background-color:rgba(0,0,0,.8);
     border-radius: 5%;
     padding: 1%;
@@ -73,11 +73,11 @@
 .notePadBody{
     padding: 2%;
     margin: 0;
-    width:50%;
+    width:60%;
     height:70%;
     position: absolute;
     top: 16%;
-    left: 25%;
+    left: 20%;
     border: 1px solid;
     border-radius: 20px;
     opacity: 1;

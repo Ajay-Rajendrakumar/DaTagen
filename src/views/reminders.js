@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import "../assets/css/login.css"
+import { Button, Form, FormGroup, Label } from 'reactstrap';
+import { ReactMultiEmail, isEmail } from 'react-multi-email'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
@@ -18,17 +20,16 @@ import moment from 'moment';
 import {pythonUrl} from '../config.js'
 import 'react-jinke-music-player/assets/index.css'
 
-class Music extends Component {
+class Reminder extends Component {
     constructor(props) {
         super(props);
         this.state = {
           
             formdata:{
-               "note":""
+               "note":"",
+               "date":"",
             },
-            selectedFile:"",
-            result_data:[],
-            result_collection:[],
+            addMode:false,
         }
     }
     componentDidMount(){
@@ -38,7 +39,7 @@ class Music extends Component {
     }
     noteList=()=>{
         let fd = new FormData()
-        this.props.distributer(fd,"noteList").then(response => {
+        this.props.distributer(fd,"reminderList").then(response => {
             if(response.status===200){ 
              let data=response['data']
                 this.setState({noteList:data})
@@ -79,7 +80,7 @@ class Music extends Component {
             }else{
                 fd.append('delete','1')
             }  
-            this.props.distributer(fd,'updateNote').then(response => {
+            this.props.distributer(fd,'updateReminder').then(response => {
                  if(response.status===200){ 
                     this.noteList()
                 }else{                
@@ -93,13 +94,16 @@ class Music extends Component {
         AddNote=()=>{
             let {formdata  } = { ...this.state }
             let fd = new FormData()
-            fd.append("note",formdata['note'])
-            
-            this.props.distributer(fd,'addNote').then(response => {
+            fd.append("reminder",formdata['note'])
+            fd.append("date",formdata['date'].split('T')[0])
+            fd.append("time",formdata['date'].split('T')[1])
+            fd.append("mail",formdata['mail'])
+            this.props.distributer(fd,'addReminder').then(response => {
                  if(response.status===200){ 
                     this.noteList()
                     formdata['note']=""
-                    this.setState({formdata})
+                    formdata['date']=""
+                    this.setState({formdata,addMode:false})
                 }else{                
                   this.toasterHandler("error", "Cant reach the server")
                 }
@@ -116,41 +120,60 @@ class Music extends Component {
         }
     
     render() {
-        let {noteList,formdata}={...this.state}
+        let {noteList,formdata,addMode,emails}={...this.state}
         return (
             <div className="notePadContainer">
                 <Card className="notePadBody">
                     <div className="row">
-                        <CardTitle className="col-11 h1 m-1 text-primary font-weight-bold ">Notes</CardTitle>
+                        <CardTitle className="col-9 h1 m-1 text-primary font-weight-bold ">Reminder</CardTitle>
+                        {addMode  && <span className="m-1"><button className={"btn btn-success mt-2"} onClick={e=>this.AddNote()}>Save</button></span>}  
+                                              <span className="m-1"><button className={addMode?"btn btn-danger mt-2":"btn mt-2 btn-primary"} onClick={e=>this.setState({addMode:!addMode})}>{!addMode? "Add Reminder":"Cancel"}</button></span>
                         <span className=""><i className="c-pointer fa fa-2x m-3 fa-times-circle text-danger" aria-hidden="true" onClick={e=>this.props.onClose()}></i></span>
                     </div>
                     <hr className="bg-info"></hr>
                     <CardBody className="noteBody">
-                        {noteList && noteList.map((key,id)=>
+                        {!addMode?
+                        
+                            noteList && noteList.map((key,id)=>
                              <Card key={id} className={key['status']==="pending"?" m-1 border-warning":" m-1 border-success"}>
                                  <CardBody className="row m-1">
-                                        <div className="col-4">{id+1 + ") "}{key['note']} </div>
+                                        <div className="col-4">{id+1 + ") "}{key['reminder']} </div>
                                         <div className="col-3">{key['status'][0].toUpperCase() + key['status'].slice(1)}{key['status']==="pending"?<i className="fa fa-exclamation-circle text-warning m-1" aria-hidden="true"></i>:<i className="fa fa-check-circle text-success m-1" aria-hidden="true"></i>}</div>
-                                        <div className="col-2">{key['date'].split('|')[0]}</div>
-                                        <div className="col-2">{key['date'].split('|')[1]}</div>
+                                        <div className="col-2">{key['date']}</div>
+                                        <div className="col-2">{key['time']}</div>
                                         {
-                                           key['status']==="pending"?
-                                            <div className="col-1 text-center "><Input type="checkbox" className="c-pointer m-1" onClick={e=>this.updateNote('status',key)}></Input></div>
-                                            :
-                                            <div className="col-1 text-center"><i className="c-pointer fa  fa-trash text-danger" aria-hidden="true" onClick={e=>this.updateNote('delete',key)}></i></div>
+                                          
+                                               <div className="col-1 text-center"><i className="c-pointer fa  fa-trash text-danger" aria-hidden="true" onClick={e=>this.updateNote('delete',key)}></i></div>
                                         }
                                </CardBody>
                               
                              </Card>
                         )
+                        :
+                        <div>
+                             <Form> 
+                            <FormGroup>
+                                <Label for={"reminder"}>Reminder</Label>
+                                <Input  type="text" name="note" value={formdata['note']} onChange={e=>this.handleChange(e)}/>
+                            </FormGroup>
+                            <FormGroup>
+                                <Label for={"date"}>Date</Label>
+                                <Input  type="datetime-local" name="date" value={formdata['date']}onChange={e=>this.handleChange(e)}/>
+                            </FormGroup>
+                            <FormGroup>
+                                <Label for={"date"}>Mail</Label>
+                                <Input  type="text" name="mail" value={formdata['mail']} onChange={e=>this.handleChange(e)}/>
+
+                           </FormGroup>
+                           
+
+            </Form>
+                        </div>
                             
 
                         }
                          <div>
-                                        <div className="row col-12 floatBottom">
-                                            <div className="col-9 text-center"><input type="text" className="form-control" name="note" onChange={e=>this.handleChange(e)} value={formdata['note']}></input></div>
-                                            <div className="col-2 text-center"><button className="btn btn-primary" onClick={e=>this.AddNote()}>Add</button></div>
-                                        </div>
+                                     
                                </div>
 
                     </CardBody>
@@ -172,4 +195,4 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Music));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Reminder));
