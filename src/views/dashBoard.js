@@ -20,8 +20,9 @@ import 'react-jinke-music-player/assets/index.css'
 import MusicPlayer from './musicPlayer'
 import NotePad from './notePad';
 import Reminder from './reminders';
-import Chat from './chat/Chat.js'
-
+import Chat from './chat/Chat.js';
+import Gallery from './galleryComponent.js'
+import Image from './imageConponent.js'
 class Dashboard extends Component {
     constructor(props) {
         super(props);
@@ -76,7 +77,7 @@ class Dashboard extends Component {
         }
     
     render() {
-        let {curImage,notepad,music,chat,logUser,remider}={...this.state}
+        let {curImage,notepad,music,chat,logUser,remider,currentImage}={...this.state}
         return (
             <div className="">
                    {chat &&
@@ -101,6 +102,13 @@ class Dashboard extends Component {
                         <div class="p-2 bd-highlight icon"><i className="fa fa-sticky-note-o fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({notepad:!notepad})}></i></div>
                         <div class="p-2 bd-highlight icon"><i className="fa fa-comments fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({chat:!chat})}></i></div>
                         <div class="p-2 bd-highlight icon"><i className="fa fa-bell fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({remider:!remider})}></i></div>
+                    </div>
+                    <div>
+
+
+                        <Gallery handleImage={img=>this.setState({currentImage:img})} user={logUser}/>
+                          <Image curImage={currentImage}></Image>      
+                
                     </div>
                     {/* <div className="MusicIcon">
                               <i className="fa fa-music fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({music:!music})}></i>

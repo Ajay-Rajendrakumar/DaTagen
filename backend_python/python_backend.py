@@ -18,14 +18,21 @@ from datetime import date
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
-
+import cv2
+import numpy as np
+import random
+import matplotlib.pyplot as plt
+import datetime
+import shutil
+import time
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 song_folder=os.getcwd()+'/songs'
-img_folder=os.getcwd()+'/image'
+img_folder=os.getcwd()+'/originalImage'
+data_folder=os.getcwd()+'/generateDataset'
+test_folder=os.getcwd()+'/contourImage'
 
 def reminder():
     conn = sqlite3.connect('test.db')
@@ -66,6 +73,77 @@ def mail(text,users):
     session.quit()
     print('Mail Sent')
 reminder() 
+
+def scale(img):
+    (height, width) = img.shape[:2]
+    res = cv2.resize(img, (int(random.randint(10,100)), int(random.randint(10,100))), interpolation = cv2.INTER_CUBIC)
+    return res
+
+def rotate(img):     
+    (rows, cols) = img.shape[:2]
+    M = cv2.getRotationMatrix2D((cols / 2, rows / 2), random.randint(0,360), 1)
+    res = cv2.warpAffine(img, M, (cols, rows))
+    return res
+
+def translate(img):
+    (rows, cols) = img.shape[:2]
+    M = np.float32([[1,0,random.randint(-10,50)],[0,1,random.randint(-10,50)]])
+    res = cv2.warpAffine(img, M, (cols, rows))
+    return res
+
+def shear(img):
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    plt.axis('off')
+    rows, cols, dim = img.shape
+     # shearing applied to y-axis
+    M=[]
+    M = np.float32([[1,   0, 0],
+                	  [0.1, 1, 0],
+                	  [0,   0, 1]])
+    # shearing applied to x-axis
+    if(random.randint(0,10)/2==0):
+        M = np.float32([[1, 0.1, 0],
+                        [0, 1  , 0],
+                        [0, 0  , 1]])
+   
+    sheared_img = cv2.warpPerspective(img,M,(int(cols*1.5),int(rows*1.5)))
+    plt.axis('off')
+    return sheared_img
+
+def reflection(img):
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    plt.axis('off')
+    rows, cols, dim = img.shape
+     # shearing applied to y-axis
+    M=[]
+    M = np.float32([[1,  0, 0   ],
+                [0, -1, rows],
+                [0,  0, 1   ]])
+    # shearing applied to x-axis
+    if(random.randint(0,10)/2==0):
+       M = np.float32([[-1, 0, cols],
+                [ 0, 1, 0   ],
+                [ 0, 0, 1   ]])
+   
+    reflected_img = cv2.warpPerspective(img,M,(int(cols),int(rows)))
+    plt.axis('off')
+    return reflected_img
+
+def cvtColor(img):
+    try:
+        res = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY )
+        return res
+    except:
+        print('error')
+        return img
+def blur(img):
+    res = cv2.blur(img,(1,1) )
+    return res
+def Canny(img):
+    img = cv2.Canny(img,100,200)
+    return img
+
+
 
 @app.route('/musicList',methods = ['POST', 'GET'])
 @cross_origin()
@@ -155,8 +233,8 @@ def addNote():
         note = request.form['note']
         conn = sqlite3.connect('test.db')
         cursor1 = conn.execute("SELECT * from NOTES")
-        date= datetime.today().strftime('%Y-%m-%d')
-        time=datetime.today().strftime('%H:%M:%S')
+        date= datetime.datetime.today().strftime('%Y-%m-%d')
+        time=datetime.datetime.today().strftime('%H:%M:%S')
         final = date+'|'+time
         cur = conn.execute("INSERT INTO NOTES (ID,NOTE,STATUS,ISDELETE,DATE) VALUES ('"+str(len(cursor1.fetchall())+1)+"', '"+note+"', 'pending',0,'"+final+"')")
         conn.commit()
@@ -240,15 +318,176 @@ def updateReminder():
     output={"message":"Update Success","status":200}
     return jsonify(output)
 
+@app.route('/galleryUpload',methods = ['POST', 'GET'])
+@cross_origin()
+def galleryUpload():
+    #output={"data":os.listdir(img_folder),"status":200}
+    user=request.form['user']
+    img_upload = request.files["image"]
+    filename = img_upload.filename
+    img_upload.save(os.path.join("originalImage", img_upload.filename))
+    conn = sqlite3.connect('test.db')
+    cur = conn.execute("SELECT * from ORIGINALIMAGE;")
+    val=cur.execute("SELECT COUNT(*) FROM ORIGINALIMAGE").fetchone()[0]
+    x = str(datetime.datetime.now())
+    date=x.split(' ')[0]
+    time=x.split(' ')[1].split('.')[0]
+    conn.execute("INSERT INTO ORIGINALIMAGE (ID,IMAGE,ISDELETE,DATE,TIME,UPLOADER) VALUES ('"+str(val+1)+"', '"+filename+"','0','"+date+"','"+time+"','"+user+"')")                 
+    conn.commit()
+    output={"status":200}
+    return jsonify(output)
+
 @app.route('/galleryList',methods = ['POST', 'GET'])
 @cross_origin()
 def galleryList():
-    output={"data":os.listdir(img_folder),"status":200}
+    #output={"data":os.listdir(img_folder),"status":200}
+    conn = sqlite3.connect('test.db')
+    cur = conn.execute("SELECT * from ORIGINALIMAGE ")
+    print(cur.fetchall())
+    cur = conn.execute("SELECT * from ORIGINALIMAGE WHERE ISDELETE='0' ")
+    data=[]
+    for i in cur.fetchall():
+        obj={}
+        obj['id']=i[0]
+        obj['image']=i[1]
+        obj['isdelete']=i[2]
+        obj['date']=i[3]
+        obj['time']=i[4]
+        obj['creator']=i[5]
+        data.append(obj)
+    output={"data":data,"status":200}
     return jsonify(output)
 
-@app.route('/image/<path:filename>',methods = ['POST', 'GET'])  
+@app.route('/originalImage/<path:filename>',methods = ['POST', 'GET'])  
 def send_Img_file(filename):  
       return send_from_directory(img_folder, filename)
+@app.route('/generateDataset/<path:filename>',methods = ['POST', 'GET'])  
+def send_data_file(filename):  
+      dirc=filename.split(':')[0]
+      files=filename.split(':')[1]
+      print(dirc,files[1:],os.getcwd()+'/generateDataset/'+dirc)
+      return send_from_directory(os.getcwd()+'/generateDataset/'+dirc, files[1:])
+
+@app.route('/contour/<path:filename>',methods = ['POST', 'GET'])  
+def send_Contour_file(filename):  
+      return send_from_directory(test_folder, filename)
+
+@app.route('/generateDataset',methods = ['POST', 'GET'])
+@cross_origin()
+def generateDataset():
+    if request.method == "POST":
+        filename=request.form['imgname']
+        fileId=request.form['imgid']
+        original_loc = os.getcwd()+'/originalImage/'+filename
+        save_loc=os.getcwd()+'/generateDataset/'+filename
+        conn = sqlite3.connect('test.db')
+        folder=True
+        try:
+            os.mkdir(save_loc)
+        except:
+            print("FolderExits")
+            shutil.rmtree(save_loc) 
+            os.mkdir(save_loc)
+            conn.execute("DELETE FROM DATASET WHERE ORIGINAL='"+str(fileId)+"'")                 
+            conn.commit()
+
+        for i in range(10):
+            i=str(i)
+            img = cv2.imread(original_loc)
+            options=["scale","rotate","translate","shear","reflection","color","blur"]
+            for j in range(random.randint(2,5)):
+                opt=options[random.randint(0,6)]
+                if opt=="scale":
+                    img=scale(img)
+                elif opt=="rotate":
+                    img=rotate(img)
+                elif opt=="translate":
+                    img=translate(img)
+                elif opt=="shear":
+                    img=shear(img)
+                elif opt=="reflection":
+                    img=reflection(img)
+                elif opt=="color":
+                    img=cvtColor(img)
+                elif opt=="blur":
+                    img=blur(img) 
+            ts=(datetime.datetime.now().timestamp())
+            print(ts)
+            imageName= "/"+str(ts).split('.')[1]+".jpg"      
+            cv2.imwrite(save_loc+imageName, img)
+            cur = conn.execute("SELECT * from DATASET;")
+            val=cur.execute("SELECT COUNT(*) FROM DATASET").fetchone()[0]
+            print(val,cur)
+            x = str(datetime.datetime.now())
+            date=x.split(' ')[0]
+            time=x.split(' ')[1].split('.')[0]
+            conn.execute("INSERT INTO DATASET (ID,IMAGE,ORIGINAL,ISDELETE,DATE,TIME) VALUES ('"+str(val+1)+"', '"+imageName+"', '"+fileId+"','0','"+date+"','"+time+"')")                 
+            conn.commit()
+        cur = conn.execute("SELECT * from DATASET WHERE ORIGINAL='"+str(fileId)+"' and ISDELETE='0' ")
+        data=[]
+        for i in cur.fetchall():
+            obj={}
+            obj['id']=i[0]
+            obj['image']=i[1]
+            obj['original']=i[2]
+            obj['isdelete']=i[3]
+            obj['date']=i[4]
+            obj['time']=i[5]
+            data.append(obj)
+        output={"data":data,"status":200}
+        return jsonify(output)
+    return jsonify({})
+@app.route('/getDataset',methods = ['POST', 'GET'])
+@cross_origin()
+def getDataset():
+    if request.method == "POST":
+        filename=request.form['imgname']
+        fileId=request.form['imgid']
+        conn = sqlite3.connect('test.db')
+
+        cur = conn.execute("SELECT * from DATASET WHERE ORIGINAL='"+str(fileId)+"' and ISDELETE='0' ")
+        data=[]
+        for i in cur.fetchall():
+            obj={}
+            obj['id']=i[0]
+            obj['image']=i[1]
+            obj['original']=i[2]
+            obj['isdelete']=i[3]
+            obj['date']=i[4]
+            obj['time']=i[5]
+            data.append(obj)
+        output={"data":data,"status":200}
+        return jsonify(output)
+    return jsonify({})
+
+@app.route('/testImage',methods = ['POST', 'GET'])
+@cross_origin()
+def testImage():
+    if request.method == "POST":
+        fileId=request.form['orgId']
+        filename=request.form['orgName']
+        id=(request.form['imgId']).split(',')
+        files=[]
+        print(fileId,filename,id)
+        conn = sqlite3.connect('test.db')
+        cur = conn.execute("SELECT * from DATASET WHERE ORIGINAL='"+str(fileId)+"' and ISDELETE='0' ")
+        data=[]
+        dic={}
+        for i in cur.fetchall():
+            dic[i[0]]=i[1]
+        print(dic)
+        shutil.rmtree(test_folder) 
+        os.mkdir(test_folder)
+        for j in id:
+            j=int(j)         
+            img=cv2.imread(data_folder+'/'+filename+dic[j])
+            img=cv2.Canny(img,100,200)
+            print(test_folder+'/'+dic[j])
+            cv2.imwrite(test_folder+'/'+dic[j],img)
+            files.append(dic[j])
+        output={"data":files,"status":200}
+        return jsonify(output)
+    return jsonify({})
 
 if __name__ == '__main__':
     app.run()

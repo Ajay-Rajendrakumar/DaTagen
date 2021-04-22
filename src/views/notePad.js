@@ -147,7 +147,7 @@ class Music extends Component {
 
                         }
                          <div>
-                                        <div className="row col-12 floatBottom">
+                                        <div className="row col-8 float_Bottom">
                                             <div className="col-9 text-center"><input type="text" className="form-control" name="note" onChange={e=>this.handleChange(e)} value={formdata['note']}></input></div>
                                             <div className="col-2 text-center"><button className="btn btn-primary" onClick={e=>this.AddNote()}>Add</button></div>
                                         </div>

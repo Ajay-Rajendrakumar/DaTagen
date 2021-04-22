@@ -30,8 +30,6 @@ class Image extends Component {
                "note":""
             },
             selectedFile:"",
-            result_data:[],
-            result_collection:[],
         }
     }
     componentDidMount(){
@@ -54,6 +52,24 @@ class Image extends Component {
          })
     }
 
+    onFileUpload=e=>{
+        let { selectedFile } = { ...this.state }
+        let fd = new FormData()
+        fd.append("image",selectedFile)
+        fd.append("user",this.props.user)
+        this.props.distributer(fd,"galleryUpload").then(response => {
+             if(response.status===200){ 
+              this.setState({selectedFile:"",fileName:""})
+              this.loadGallery()
+
+            }else{                
+              this.toasterHandler("error", "Cant reach the server")
+            }
+          }).catch((err)=>{
+            this.toasterHandler("error", err)
+          })
+        }
+
 
     setParameters(qNo){
         let { formdata,all_questions } = { ...this.state }
@@ -70,6 +86,20 @@ class Image extends Component {
             position: toast.POSITION.TOP_RIGHT,
         });
     }
+    onFileChange = event => {
+        let file=event.target.files[0]
+        var selectedFile = event.target.files[0];
+        var reader = new FileReader();
+        this.setState({ selectedFile: file, fileName:file.name },()=>{
+        var imgtag = document.getElementById("myimage");
+        console.log(imgtag)
+        reader.onload = function(event) {
+            imgtag.src = event.target.result;
+        };
+        reader.readAsDataURL(selectedFile);
+        this.setState({ selectedFile: file, fileName:file.name });
+    });
+      };
 
       
  
@@ -82,12 +112,24 @@ class Image extends Component {
         }
     
     render() {
-        let {galleryList}={...this.state}
+        let {galleryList,selectedFile}={...this.state}
         return (
-            <div className="galleryComponent">
-                {galleryList && galleryList.map((img,val)=>
-                        <img className="imgSize" src={pythonUrl+'/image/'+img} onClick={e=>this.props.handleImage(img)}></img>
+            <div className="gallery border">
+                <div className="galleryComponent">
+                    {galleryList && galleryList.map((img,val)=>
+                        <img className="imgSize" src={pythonUrl+'/originalImage/'+img['image']} onClick={e=>this.props.handleImage(img)}></img>
                 )}
+                </div>
+
+                <div className="uploadbtn">     
+                        {selectedFile&& <div className="imgPreview"><img className="imgUpload" id="myimage" src={""} ></img></div>}
+                        <button className={"floatBottom c-pointer font-weight-bold "+ (selectedFile ? " btn btn-success":" btn btn-primary")} onClick={e=>(selectedFile ? this.onFileUpload() : document.getElementById("selectSong").click())}
+                            >
+                        <span>{selectedFile ? "Save" : "Upload"}</span>
+                        </button>
+                        <input id='selectSong' type="file" onChange={this.onFileChange} hidden/>                     
+
+                </div>
             </div>
         );
     }

@@ -68,16 +68,17 @@
    height: 100%; 
    background-color:black;
    opacity: 0.92;
+   z-index: 1000;
 }
 
 .notePadBody{
     padding: 2%;
     margin: 0;
-    width:60%;
-    height:70%;
+    width:70%;
+    height:80%;
     position: absolute;
-    top: 16%;
-    left: 20%;
+    top: 6%;
+    left: 15%;
     border: 1px solid;
     border-radius: 20px;
     opacity: 1;
@@ -88,16 +89,16 @@
 }
 
 .noteBody{
-    height: 70%;
+    height: 80%;
     overflow-x: auto;
     margin-bottom: 4%;
     opacity: 1;
 }
 
-.floatBottom{
-    position: absolute;
-    bottom:0;
-    margin: 2%;
+.float_Bottom{
+    position: fixed;
+    bottom: 3%;
+
 }
 
 .NoteIcon{
@@ -117,16 +118,15 @@ transition: background-color 1s;
     margin:1%;
     margin-top: 5%;
     position: absolute;
-    height: 530px;
-    border:1px solid black;
+    height: 56%;
+    width: 92%;
+
 }
 .galleryComponent{
     position: absolute;
     bottom: 0px;
-    margin-bottom: 5%;
-    margin:1% ;
-    height: 200px;
-    width: 92%;
+    height: 180px;
+    width: 90%;
     overflow-y:auto ;
     white-space:nowrap;
 }
@@ -135,6 +135,7 @@ transition: background-color 1s;
     height:160px;
     width:180px;
     margin: 1%;
+    transition: 0.2s;
 }
 
 .imgSize:hover {
@@ -154,7 +155,7 @@ transition: background-color 1s;
 
   .chat-app{
         position: absolute  ;
-        top:50px;
+        top:40px;
         right: 5%;
         width: 30%;
         height: 90%;
@@ -164,7 +165,8 @@ transition: background-color 1s;
         border-radius: 20px;
         margin: 1%;
         background: rgba(5, 0, 0, 0.9);
-        opacity: 0.6;
+        opacity:0.9;
+        z-index: 1000;
   }
   .chat-app::-webkit-scrollbar {
     display: none;
@@ -222,10 +224,10 @@ transition: background-color 1s;
     font-size: 12px;
 }
 .message-name{
-    font-size: 13px;
+    font-size: 17px;
 }
 .message-body{
-    font-size: 14px;
+    font-size: 15px;
   
 }
 .floatRight{
@@ -242,4 +244,123 @@ transition: background-color 1s;
     background-color: rgba(0, 174, 255, 0.9);
     margin: 10px;
     padding: 10px;
+  }
+
+  .gallery{
+    position: absolute;
+    bottom: 0px;
+    margin-bottom: 5%;
+    margin:1% ;
+    height: 200px;
+    width: 92%;
+    padding: 2px;
+
+  }
+.uploadimage{
+    height: 100%;
+
+}
+  .uploadbtn{
+      border-radius: 10px;
+      height: 98%;
+      width: 150px;
+      margin: 2px;
+      position: absolute;
+      right:0px;
+      background-color:rgba(47, 48, 48, 0.6); 
+
+  }
+
+.floatBottom{
+    position: absolute;
+    bottom: 0px;
+    left: 23%;
+}
+
+
+
+.imgUpload{
+    height:100%;
+    width:100%;
+    margin: 1%;
+    border-radius: 10px;
+    transition: 0.5s;
+}
+
+.imgUpload:hover {
+    transform: scale(1.3); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+  }
+ .imgText{
+
+     bottom: 0;
+ }
+
+
+ .imageDisplay{
+     height: 100%;
+     overflow:scroll;
+    overflow-x:hidden ;
+    padding: 3%;
+ }
+ /* width */
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888; 
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }
+
+  .iconbar{
+      width:80px;
+      height: 100%;
+      flex-direction: column;
+      justify-items: center;
+      padding-top: 8%;
+
+  }
+
+  .selectImg{
+        height: 150px;
+        width: 150px;
+  }
+  .selectImg:hover{
+      background-color:red;
+      opacity: 0.3;
+      padding: 1%;
+  }
+  .selectComp{
+      overflow:auto;
+      height: 100%;
+      padding: 1%;
+      overflow-x: hidden;
+    
+  }
+.dataImg{
+    max-height: 200px;
+}
+  .imgSucborder{
+      background-color:rgba(238, 8, 8, 0.8); 
+      padding: 1%;
+      border-radius: 10px;
+  }
+
+  .testbtn{
+      position: absolute;
+      width: 150px;
+      font-size: 15px;
+      padding: 1%;
+      right: 8%;
+      border-radius: 10px;
   }
