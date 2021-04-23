@@ -35,6 +35,7 @@ class Image extends Component {
             selectComp:true,
             contourComp:false,
             selectedData:[],
+            imgCount:"10",
         }
     }
     componentDidMount(){
@@ -72,19 +73,24 @@ class Image extends Component {
         let fd = new FormData()
         fd.append("imgname",curImage.image)
         fd.append("imgid",curImage.id)
+        fd.append("count",this.state.imgCount)
+        this.setState({generateloading:true})
         this.props.distributer(fd,"generateDataset").then(response => {
              if(response.status===200){ 
                 let data=response['data']
                 this.setState({DataList:[]})
                 this.getset(this.props.curImage)
-               
+                this.setState({generateloading:false})
+                
                 console.log(data)
 
             }else{                
               this.toasterHandler("error", "Cant reach the server")
+              this.setState({generateloading:false})
             }
           }).catch((err)=>{
             this.toasterHandler("error", err)
+            this.setState({generateloading:false})
           })
       }
       getset=(curImage)=>{
@@ -109,9 +115,10 @@ class Image extends Component {
         
         handleChange=(e)=>{
         
-            let { formdata } = { ...this.state }
-            formdata[e.target.name] = e.target.value       
-            this.setState({ formdata })
+            let { imgCount } = { ...this.state }
+            console.log(imgCount,e.target.value)
+            imgCount= e.target.value       
+            this.setState({ imgCount })
         }
         selectImage=(img)=>{
             let{selectedData}={...this.state}
@@ -144,23 +151,60 @@ class Image extends Component {
                     ids.push(element['id'])    
             });
             fd.append("imgId",ids)
-            
+            this.setState({testloading:true})
         this.props.distributer(fd,"testImage").then(response => {
              if(response.status===200){ 
                 let data=response['data']
                 console.log(response['data'])
                 this.setState({contourList:data,contourComp:true,dataSet:false,imgInfo:false})
+            this.setState({testloading:false})
 
             }else{                
               this.toasterHandler("error", "Cant reach the server")
+            this.setState({testloading:false})
+                
             }
           }).catch((err)=>{
             this.toasterHandler("error", err)
-          })
+            this.setState({testloading:false})
+            
+        })
+        }
+        zip=(file)=>{
+            let {curImage,logUser}={...this.props}
+            let fd = new FormData()
+            fd.append("orgName",curImage.image)
+            fd.append("orgId",curImage.id)
+            fd.append("user",logUser)
+            fd.append("reciever",this.state.reciever)
+            let ids=[]
+            file.forEach(element => {
+                    ids.push(element['id'])    
+            });
+            fd.append("imgId",ids)
+            this.setState({ziploading:false})
+            
+        this.props.distributer(fd,"sendzip").then(response => {
+             if(response.status===200){ 
+                let data=response['data']
+                this.setState({zipMail:!this.state.zipMail})
+                this.toasterHandler("success", "Mail Sent Successfully")
+                this.setState({ziploading:false})
+
+            }else{                
+              this.toasterHandler("error", "Cant reach the server")
+            this.setState({ziploading:false})
+                
+            }
+          }).catch((err)=>{
+            this.toasterHandler("error", err)
+            this.setState({ziploading:false})
+            
+        })
         }
     
     render() {
-        let {DataList,dataSet,imgInfo,selectComp,selectedData,contourList,contourComp}={...this.state}
+        let {DataList,dataSet,imgInfo,selectComp,selectedData,contourList,contourComp,imgCount,zipMail,reciever,generateloading,testloading,ziploading}={...this.state}
         let {curImage}={...this.props}
         return (
             <div className="row imageComponent border ">
@@ -186,9 +230,20 @@ class Image extends Component {
                                     <div className=" col-12">
                                         <td className="text-primary">Date</td><td>:</td><td className=" p-1">{curImage['date']+" "+curImage['time']}</td>
                                     </div>
-                                    <div className=" col-12 text-center m-2">
-                                        <button className={" c-pointer font-weight-bold btn btn-primary"} onClick={e=>(this.generateSet(curImage))} >
-                                        <span>{"Generate DataSet"}</span>
+                                    <div className=" col-12 row text-center m-2">
+                                    <select className="form-control col-9" value={imgCount} onChange={e=>this.handleChange(e)}>
+                                        <option value="10">10</option>
+                                        <option value="20">20</option>
+                                        <option  value="50">50</option>
+    
+                                        </select>
+                                        <button disabled={generateloading} className={"col-9 c-pointer font-weight-bold btn btn-primary text-center "} onClick={e=>(this.generateSet(curImage))} >
+                                            {!generateloading?
+                                            <span>{"Generate DataSet"}</span>
+                                            :
+                                            <div class="spinner-border text-light" role="status">
+                                            <span class="visually-hidden"></span>
+                                            </div>}
                                         </button>
                                     </div>
                                 </div>}
@@ -201,6 +256,8 @@ class Image extends Component {
                     <hr></hr>
                 {DataList.map((img,val)=>
                         <span key={val}>
+                            
+                        <span>{val+1}</span> 
                         <img className={"dataImg col-12 m-1 c-pointer"+(selectedData && selectedData.includes(img)?" imgSucborder":"")} src={pythonUrl+'/generateDataset/'+curImage['image']+':'+img['image']} onClick={e=>this.selectImage(img)}></img>
                         <hr></hr>
                         </span>
@@ -210,12 +267,21 @@ class Image extends Component {
                { selectedData &&
                 <><div className="text-center col-7 text-secondary font-weight-bold h3 ">Selected:</div>
                </>}
-               {selectedData && curImage && <button className="testbtn text-center text-light font-weight-bold btn btn-primary " onClick={e=>this.test(selectedData)}>Test Detection</button>}
+               {selectedData && curImage && 
+                        <div className=" btnRow ">
+                        <button className=" text-center text-light font-weight-bold btn btn-info " disabled={testloading} onClick={e=>this.test(selectedData)}>
+                        {!testloading?"Test Detection":
+                        <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden"></span>
+                        </div>}</button>
+                        <button className="ml-3 text-center text-light font-weight-bold btn btn-primary " onClick={e=>this.setState({zipMail:!zipMail})}>Mail</button>
+                        </div>
+                }
                     <hr className="col-12"></hr>
                 {selectedData && selectedData.map((img,val)=>
-            
+                          
                         <img   key={val} className="mb-4 selectImg col-4  c-pointer" src={pythonUrl+'/generateDataset/'+curImage['image']+':'+img['image']} onClick={e=>this.removeImg(img)}></img>
-                    
+                        
                 )}
                 </div>}
                 {contourComp && <div className="row col-5  selectComp border">
@@ -229,6 +295,37 @@ class Image extends Component {
                         
                     )}
                 </div>}
+
+                {zipMail && 
+                    <div className="zipMail">
+                            <div className="zipModel row">
+                            <span className="text-light font-weight-bold col-11">Selected Images {"("+(selectedData.length)+")"}</span>
+                            <button className="col-1 text-center text-light font-weight-bold btn btn-danger " onClick={e=>this.setState({zipMail:!zipMail})}>Close</button>
+
+                                    <div className="zipContent col-12">
+                                    {selectedData && selectedData.map((img,val)=>
+                          
+                                                <img   key={val} className="mb-4 zipImg col-4  c-pointer" src={pythonUrl+'/generateDataset/'+curImage['image']+':'+img['image']} onClick={e=>this.removeImg(img)}></img>
+                                                
+                                        )}
+                                    </div>
+                               
+                                    <div className="zipInput row col-12">
+                                            
+                                            <div className="col-11 text-center"><input placeholder="Recievers:samp@gmail.com,samp2.gmail.com" type="text" className="form-control" name="email" onChange={e=>this.setState({reciever:e.target.value})} value={reciever}></input></div>
+                                            <div className="col-1 text-center"><button className="btn btn-success" disabled={ziploading} onClick={e=>this.zip(selectedData)}> {!ziploading?"Send Mail":
+                                            <div class="spinner-border text-light" role="status">
+                                            <span class="visually-hidden"></span>
+                                            </div>}</button></div>
+                                       
+                                    </div>
+                            
+                            
+                            
+                            </div>
+                    </div>
+
+                }
        
             </div>
         );

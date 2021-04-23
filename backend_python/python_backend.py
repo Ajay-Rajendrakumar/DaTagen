@@ -18,12 +18,14 @@ from datetime import date
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 import cv2
 import numpy as np
 import random
 import matplotlib.pyplot as plt
 import datetime
 import shutil
+import zipfile
 import time
 app = Flask(__name__)
 cors = CORS(app)
@@ -33,6 +35,7 @@ song_folder=os.getcwd()+'/songs'
 img_folder=os.getcwd()+'/originalImage'
 data_folder=os.getcwd()+'/generateDataset'
 test_folder=os.getcwd()+'/contourImage'
+zip_folder=os.getcwd()+'/Dataset'
 
 def reminder():
     conn = sqlite3.connect('test.db')
@@ -60,7 +63,7 @@ def mail(text,users):
     #Setup the MIME
     message = MIMEMultipart()
     message['From'] = sender_address
-    message['To'] = receiver_address
+    message['To'] = "Users"
     message['Subject'] = 'Reminder'   #The subject line
     #The body and the attachments for the mail
     message.attach(MIMEText(mail_content, 'plain'))
@@ -143,7 +146,40 @@ def Canny(img):
     img = cv2.Canny(img,100,200)
     return img
 
+   
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file), 
+                       os.path.relpath(os.path.join(root, file), 
+                                       os.path.join(path, '..')))
+def send_zip_mail(reviever,filename):
+    # Create a multipart message
+    sender_address = "ajaydevtest@gmail.com"
+    sender_pass = '@u8bburm.@devtest'
+    msg = MIMEMultipart()
+    dte=str(datetime.datetime.today()).split(' ')
+    date=dte[0]
+    time=dte[1].split('.')[0]
+    body_part = MIMEText("Generate Dataset attached "+date+" "+time+" with this mail", 'plain')
+    msg['Subject'] = "Dataset"
+    msg['From'] = sender_address
+    msg['To'] = "Developers"
+    # Add body to email
+    msg.attach(body_part)
+    # open and read the file in binary
+    with open(os.getcwd()+'/zip/'+filename,'rb') as file:
+    # Attach the file with filename to the email
+        msg.attach(MIMEApplication(file.read(), Name=filename))
 
+    # Create SMTP object
+    session = smtplib.SMTP('smtp.gmail.com', 587)
+    session.starttls() #enable security
+    session.login(sender_address, sender_pass) #login with mail_id and password
+    session.sendmail(msg['From'], reviever, msg.as_string())
+    session.quit()
+    # Login to the server
 
 @app.route('/musicList',methods = ['POST', 'GET'])
 @cross_origin()
@@ -378,6 +414,7 @@ def generateDataset():
     if request.method == "POST":
         filename=request.form['imgname']
         fileId=request.form['imgid']
+        count=request.form['count']
         original_loc = os.getcwd()+'/originalImage/'+filename
         save_loc=os.getcwd()+'/generateDataset/'+filename
         conn = sqlite3.connect('test.db')
@@ -391,12 +428,12 @@ def generateDataset():
             conn.execute("DELETE FROM DATASET WHERE ORIGINAL='"+str(fileId)+"'")                 
             conn.commit()
 
-        for i in range(10):
+        for i in range(int(count)):
             i=str(i)
             img = cv2.imread(original_loc)
             options=["scale","rotate","translate","shear","reflection","color","blur"]
             for j in range(random.randint(2,5)):
-                opt=options[random.randint(0,6)]
+                opt=options[random.randint(0,5)]
                 if opt=="scale":
                     img=scale(img)
                 elif opt=="rotate":
@@ -486,6 +523,45 @@ def testImage():
             cv2.imwrite(test_folder+'/'+dic[j],img)
             files.append(dic[j])
         output={"data":files,"status":200}
+        return jsonify(output)
+    return jsonify({})
+
+@app.route('/sendzip',methods = ['POST', 'GET'])
+@cross_origin()
+def sendzip():
+    if request.method == "POST":
+        fileId=request.form['orgId']
+        filename=request.form['orgName']
+        id=(request.form['imgId']).split(',')
+        user=(request.form['user'])
+        reciever=(request.form['reciever']).split(',')
+        files=[]
+        print(fileId,filename,id)
+        conn = sqlite3.connect('test.db')
+        cur = conn.execute("SELECT * from DATASET WHERE ORIGINAL='"+str(fileId)+"' and ISDELETE='0' ")
+        data=[]
+        dic={}
+        for i in cur.fetchall():
+            dic[i[0]]=i[1]
+        print(dic)
+        try:
+            os.mkdir(zip_folder)
+        except:
+            shutil.rmtree(zip_folder) 
+            os.mkdir(zip_folder)
+        for j in id:
+            j=int(j)         
+            src=data_folder+'/'+filename+dic[j]
+            dst=zip_folder+'/'+dic[j]
+            print(src,dst)
+            shutil.copyfile(src, dst)
+        ts=(datetime.datetime.now().timestamp())
+        filename = str(ts)+".zip"
+        zipf = zipfile.ZipFile(os.getcwd()+'/zip/'+filename, 'w', zipfile.ZIP_DEFLATED)
+        zipdir(zip_folder+"/", zipf)
+        zipf.close()
+        send_zip_mail(reciever,filename)
+        output={"msg":"Suucess","status":200}
         return jsonify(output)
     return jsonify({})
 

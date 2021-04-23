@@ -107,7 +107,7 @@ class Dashboard extends Component {
 
 
                         <Gallery handleImage={img=>this.setState({currentImage:img})} user={logUser}/>
-                          <Image curImage={currentImage}></Image>      
+                          <Image curImage={currentImage} user={logUser}></Image>      
                 
                     </div>
                     {/* <div className="MusicIcon">

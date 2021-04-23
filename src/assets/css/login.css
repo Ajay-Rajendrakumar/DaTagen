@@ -348,7 +348,8 @@ transition: background-color 1s;
     
   }
 .dataImg{
-    max-height: 200px;
+    max-height: 240px;
+    min-height: 150px;
 }
   .imgSucborder{
       background-color:rgba(238, 8, 8, 0.8); 
@@ -363,4 +364,46 @@ transition: background-color 1s;
       padding: 1%;
       right: 8%;
       border-radius: 10px;
+  }
+
+  .btnRow{
+    position: absolute;
+    right: 8%;
+  }
+
+  .zipMail{
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6); 
+      
+  }
+
+  .zipModel{
+      margin: 5%;
+  }
+  .zipContent{
+    height: 280px;
+    padding: 2px;
+    width: 90%;
+    overflow-y:auto ;
+    white-space:nowrap;
+    border: 1px solid wheat;
+    background-color: black;
+    border-radius: 10px;
+  }
+
+  .zipInput{
+      margin-top: 50px;
+  }
+
+  .zipImg{
+        height: 200px;
+        width: 250px;
+        margin: 1%;
+  }
+
+  .zipImg:hover{
+    transform: scale(1.3);
+    border:1px solid wheat;
   }
