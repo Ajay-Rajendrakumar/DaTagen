@@ -67,7 +67,7 @@
    width: 100%;
    height: 100%; 
    background-color:black;
-   opacity: 0.92;
+   opacity: 0.98;
    z-index: 1000;
 }
 
@@ -132,9 +132,9 @@ transition: background-color 1s;
 }
 
 .imgSize{
-    height:160px;
-    width:180px;
-    margin: 1%;
+    height:150px;
+    width:150px;
+    margin:1%;
     transition: 0.2s;
 }
 
@@ -257,8 +257,13 @@ transition: background-color 1s;
 
   }
 .uploadimage{
-    height: 100%;
+    height: 60%;
+    overflow: auto;
 
+}
+.showImage{
+    max-width: 250px;
+    max-height: 250px;
 }
   .uploadbtn{
       border-radius: 10px;
@@ -291,15 +296,19 @@ transition: background-color 1s;
     transform: scale(1.3); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
   }
  .imgText{
-
      bottom: 0;
+     overflow:auto;
+     height: 35%;
  }
 
+ .imgText::-webkit-scrollbar {
+    display: none;
+  }
+  
 
  .imageDisplay{
-     height: 100%;
-     overflow:scroll;
-    overflow-x:hidden ;
+    height: 100%;
+    overflow:scroll;
     padding: 3%;
  }
  /* width */

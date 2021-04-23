@@ -151,7 +151,7 @@ class Image extends Component {
                     ids.push(element['id'])    
             });
             fd.append("imgId",ids)
-            this.setState({testloading:true})
+            this.setState({testloading:true,contourList:[]})
         this.props.distributer(fd,"testImage").then(response => {
              if(response.status===200){ 
                 let data=response['data']
@@ -216,13 +216,13 @@ class Image extends Component {
                             <span className="m-1"><i className={"fa fa-user-circle  fa-2x c-pointer "+(!contourComp?"text-danger":"text-primary")} onClick={e=>this.setState({contourComp:!contourComp,dataSet:false,imgInfo:false})}></i></span>
                         
                   </div>
-                {dataSet && <div className="col-2  uploadImage border">
-                        <div className="uploadImage p-1">{curImage && <img className="col-12 m-2" src={pythonUrl+'/originalImage/'+curImage['image']}></img>}</div>
+                {dataSet && <div className="col-2  uploadImage ">
+                        <div className=" p-1">{curImage && <img className="showImage col-12 m-2 " src={pythonUrl+'/originalImage/'+curImage['image']}></img>}</div>
                         
                         <div className="imgText">
-                                {curImage && <div className=" row h6 font-weight-bold p-2 text-center border ">
+                                {curImage && <div className=" row h6 font-weight-bold  text-center border">
                                     <div className="col-12 ">
-                                        <td className="text-primary">Name</td><td>:</td><td className=" p-1">{curImage['image'].split('.')[0]}</td>
+                                        <td className="text-primary">Name</td><td>:</td><td className=" p-1 overflow-auto">{curImage['image'].split('.')[0]}</td>
                                     </div>
                                     <div className="col-12">
                                         <td className="text-primary">Creator</td><td>:</td><td className=" p-1">{curImage['creator']}</td>
@@ -250,7 +250,7 @@ class Image extends Component {
 
                         </div>
                 </div>}
-                {imgInfo && <div className="col-3 imageDisplay ">
+                {imgInfo && <div className="col-3 imageDisplay border ">
                 {DataList &&  <>
                         <div className="text-center col-12 text-secondary font-weight-bold h3 mt-n4">Dataset</div>
                     <hr></hr>
@@ -291,7 +291,7 @@ class Image extends Component {
                <hr className="col-12"></hr>
                    {contourList && contourList.map((img,val)=>
                 
-                            <img   key={val} className="mb-4 selectImg col-4  c-pointer" src={pythonUrl+'/contour/'+img} onClick={e=>console.log(img,val)}></img>
+                            <img   key={val} className="mb-4 selectImg col-4  c-pointer" src={pythonUrl+'/contour/'+img+"?t=" + new Date().getTime()} onClick={e=>console.log(img,val)}></img>
                         
                     )}
                 </div>}

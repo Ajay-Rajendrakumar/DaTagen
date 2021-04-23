@@ -17,7 +17,7 @@ class header extends Component {
             <div>
                 <header className="header">
                     <div className="row  d-flex justify-content-start">
-                    <div className="name-profileImage ">PX </div>
+                    <div className="name-profileImage ">DG </div>
                         <div className=" text-primary  mt-3 bg-light">
                             <span className="ml85 h3 font-weight-bold">
                                 {this.props.page}

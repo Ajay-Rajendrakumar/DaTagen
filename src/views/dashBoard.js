@@ -98,10 +98,10 @@ class Dashboard extends Component {
                         />
                     }
                     <div class="ToolBar d-flex flex-column bd-highlight mb-3">
-                        <div class="p-2 bd-highlight icon"><MusicPlayer onClose={e=>this.setState({music:!music})}/></div>
-                        <div class="p-2 bd-highlight icon"><i className="fa fa-sticky-note-o fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({notepad:!notepad})}></i></div>
-                        <div class="p-2 bd-highlight icon"><i className="fa fa-comments fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({chat:!chat})}></i></div>
-                        <div class="p-2 bd-highlight icon"><i className="fa fa-bell fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({remider:!remider})}></i></div>
+                        <div class="p-2 bd-highlight icon c-pointer"><MusicPlayer onClose={e=>this.setState({music:!music})}/></div>
+                        <div class="p-2 bd-highlight icon c-pointer"><i className="fa fa-sticky-note-o fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({notepad:!notepad})}></i></div>
+                        <div class="p-2 bd-highlight icon c-pointer"><i className="fa fa-comments fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({chat:!chat})}></i></div>
+                        <div class="p-2 bd-highlight icon c-pointer"><i className="fa fa-bell fa-2x text-white" aria-hidden="true" onClick={e=>this.setState({remider:!remider})}></i></div>
                     </div>
                     <div>
 

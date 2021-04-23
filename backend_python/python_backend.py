@@ -42,7 +42,7 @@ def reminder():
     cur = conn.execute("SELECT * from REMINDER WHERE ISDELETE='0' AND STATUS='pending' AND date='"+str(date.today())+"'")
     data=[]
     for i in cur.fetchall():
-        now = datetime.now()
+        now = datetime.datetime.now()
         db_time=i[5].split(':')
         val=i
         if((int(now.hour))==(int(db_time[0]))and (int(now.minute))==(int(db_time[1]))):
@@ -56,10 +56,10 @@ def reminder():
 
 def mail(text,users):
     sender_address = "ajaydevtest@gmail.com"
-    sender_pass = '@u8bburm.@devtest'
+    sender_pass = ''
     print(sender_address,sender_pass,text,users)
     mail_content=text
-    receiver_address = users
+    receiver_address = users.split(',')
     #Setup the MIME
     message = MIMEMultipart()
     message['From'] = sender_address
@@ -78,59 +78,74 @@ def mail(text,users):
 reminder() 
 
 def scale(img):
-    (height, width) = img.shape[:2]
-    res = cv2.resize(img, (int(random.randint(10,100)), int(random.randint(10,100))), interpolation = cv2.INTER_CUBIC)
-    return res
+    try:
+        (height, width) = img.shape[:2]
+        res = cv2.resize(img, (int(random.randint(10,100)), int(random.randint(10,100))), interpolation = cv2.INTER_CUBIC)
+        return res
+    except:
+        return img
 
-def rotate(img):     
-    (rows, cols) = img.shape[:2]
-    M = cv2.getRotationMatrix2D((cols / 2, rows / 2), random.randint(0,360), 1)
-    res = cv2.warpAffine(img, M, (cols, rows))
-    return res
+def rotate(img): 
+    try:    
+        (rows, cols) = img.shape[:2]
+        M = cv2.getRotationMatrix2D((cols / 2, rows / 2), random.randint(0,360), 1)
+        res = cv2.warpAffine(img, M, (cols, rows))
+        return res
+    except:
+        return img
 
 def translate(img):
-    (rows, cols) = img.shape[:2]
-    M = np.float32([[1,0,random.randint(-10,50)],[0,1,random.randint(-10,50)]])
-    res = cv2.warpAffine(img, M, (cols, rows))
-    return res
+    try:
+        (rows, cols) = img.shape[:2]
+        M = np.float32([[1,0,random.randint(-10,50)],[0,1,random.randint(-10,50)]])
+        res = cv2.warpAffine(img, M, (cols, rows))
+        return res
+    except:
+        return img
 
 def shear(img):
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    plt.axis('off')
-    rows, cols, dim = img.shape
-     # shearing applied to y-axis
-    M=[]
-    M = np.float32([[1,   0, 0],
-                	  [0.1, 1, 0],
-                	  [0,   0, 1]])
-    # shearing applied to x-axis
-    if(random.randint(0,10)/2==0):
-        M = np.float32([[1, 0.1, 0],
-                        [0, 1  , 0],
-                        [0, 0  , 1]])
-   
-    sheared_img = cv2.warpPerspective(img,M,(int(cols*1.5),int(rows*1.5)))
-    plt.axis('off')
-    return sheared_img
+    try:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        plt.axis('off')
+        rows, cols, dim = img.shape
+        # shearing applied to y-axis
+        M=[]
+        M = np.float32([[1,   0, 0],
+                        [0.9, 1, 0],
+                        [0,   0, 1]])
+        # shearing applied to x-axis
+        if(random.randint(0,10)/2==0):
+            M = np.float32([[1, 0.9, 0],
+                            [0, 1  , 0],
+                            [0, 0  , 1]])
+    
+        sheared_img = cv2.warpPerspective(img,M,(int(cols*1.5),int(rows*1.5)))
+        plt.axis('off')
+        return sheared_img
+    except:
+        return img
 
 def reflection(img):
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    plt.axis('off')
-    rows, cols, dim = img.shape
-     # shearing applied to y-axis
-    M=[]
-    M = np.float32([[1,  0, 0   ],
-                [0, -1, rows],
-                [0,  0, 1   ]])
-    # shearing applied to x-axis
-    if(random.randint(0,10)/2==0):
-       M = np.float32([[-1, 0, cols],
-                [ 0, 1, 0   ],
-                [ 0, 0, 1   ]])
-   
-    reflected_img = cv2.warpPerspective(img,M,(int(cols),int(rows)))
-    plt.axis('off')
-    return reflected_img
+    try:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        plt.axis('off')
+        rows, cols, dim = img.shape
+        # shearing applied to y-axis
+        M=[]
+        M = np.float32([[1,  0, 0   ],
+                    [0, -1, rows],
+                    [0,  0, 1   ]])
+        # shearing applied to x-axis
+        if(random.randint(0,10)/2==0):
+            M = np.float32([[-1, 0, cols],
+                    [ 0, 1, 0   ],
+                    [ 0, 0, 1   ]])
+    
+        reflected_img = cv2.warpPerspective(img,M,(int(cols),int(rows)))
+        plt.axis('off')
+        return reflected_img
+    except:
+        return img
 
 def cvtColor(img):
     try:
@@ -140,13 +155,38 @@ def cvtColor(img):
         print('error')
         return img
 def blur(img):
-    res = cv2.blur(img,(1,1) )
-    return res
-def Canny(img):
-    img = cv2.Canny(img,100,200)
-    return img
+    try:
+        res = cv2.GaussianBlur(img,(3,3),cv2.BORDER_DEFAULT )
+        return res
+    except:
+        return img
+def CannyEdge(img):
+    try:
+        img_gray1 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        ret, thresh1 = cv2.threshold(img_gray1, 150, 255, cv2.THRESH_BINARY)
+        contours2, hierarchy2 = cv2.findContours(thresh1, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        image_copy2 = img.copy()
+        cv2.drawContours(image_copy2, contours2, -1, (0, 255, 0), 2, cv2.LINE_AA)
+        image_copy3 = img.copy()
+        for i, contour in enumerate(contours2): # loop over one contour area
+            for j, contour_point in enumerate(contour): # loop over the points
+                cv2.circle(image_copy3, ((contour_point[0][0], contour_point[0][1])), 2, (0, 255, 0), 2, cv2.LINE_AA)
+        return image_copy3
+    except:
+        return img
 
-   
+
+
+def change_brightness(img):
+    value=random.randint(-5,5)
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    h, s, v = cv2.split(hsv)
+    v = cv2.add(v,value)
+    v[v > 255] = 255
+    v[v < 0] = 0
+    final_hsv = cv2.merge((h, s, v))
+    img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+    return img  
 def zipdir(path, ziph):
     # ziph is zipfile handle
     for root, dirs, files in os.walk(path):
@@ -157,7 +197,7 @@ def zipdir(path, ziph):
 def send_zip_mail(reviever,filename):
     # Create a multipart message
     sender_address = "ajaydevtest@gmail.com"
-    sender_pass = '@u8bburm.@devtest'
+    sender_pass = ''
     msg = MIMEMultipart()
     dte=str(datetime.datetime.today()).split(' ')
     date=dte[0]
@@ -431,9 +471,9 @@ def generateDataset():
         for i in range(int(count)):
             i=str(i)
             img = cv2.imread(original_loc)
-            options=["scale","rotate","translate","shear","reflection","color","blur"]
-            for j in range(random.randint(2,5)):
-                opt=options[random.randint(0,5)]
+            options=["scale","rotate","translate","shear","reflection","color","blur","bright"]
+            for j in range(random.randint(1,5)):
+                opt=options[random.randint(0,7)]
                 if opt=="scale":
                     img=scale(img)
                 elif opt=="rotate":
@@ -447,7 +487,9 @@ def generateDataset():
                 elif opt=="color":
                     img=cvtColor(img)
                 elif opt=="blur":
-                    img=blur(img) 
+                    img=blur(img)
+                elif opt=="bright":
+                    img=change_brightness(img) 
             ts=(datetime.datetime.now().timestamp())
             print(ts)
             imageName= "/"+str(ts).split('.')[1]+".jpg"      
@@ -518,9 +560,10 @@ def testImage():
         for j in id:
             j=int(j)         
             img=cv2.imread(data_folder+'/'+filename+dic[j])
-            img=cv2.Canny(img,100,200)
+            img=CannyEdge(img)
             print(test_folder+'/'+dic[j])
             cv2.imwrite(test_folder+'/'+dic[j],img)
+            time.sleep(1)
             files.append(dic[j])
         output={"data":files,"status":200}
         return jsonify(output)

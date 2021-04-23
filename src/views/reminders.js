@@ -125,7 +125,7 @@ class Reminder extends Component {
             <div className="notePadContainer">
                 <Card className="notePadBody">
                     <div className="row">
-                        <CardTitle className="col-9 h1 m-1 text-primary font-weight-bold ">Reminder</CardTitle>
+                        <CardTitle className="col-9 h1 m-1 text-primary font-weight-bold ">Notify</CardTitle>
                         {addMode  && <span className="m-1"><button className={"btn btn-success mt-2"} onClick={e=>this.AddNote()}>Save</button></span>}  
                                               <span className="m-1"><button className={addMode?"btn btn-danger mt-2":"btn mt-2 btn-primary"} onClick={e=>this.setState({addMode:!addMode})}>{!addMode? "Add Reminder":"Cancel"}</button></span>
                         <span className=""><i className="c-pointer fa fa-2x m-3 fa-times-circle text-danger" aria-hidden="true" onClick={e=>this.props.onClose()}></i></span>

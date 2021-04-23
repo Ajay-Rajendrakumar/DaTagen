@@ -34,7 +34,7 @@ function App() {
               <Route exact={true} path="/dashboard" render={() => (
                 <>
                     <div className="mainContainer" >
-                      <Header page="PiXlr"/>
+                      <Header page="DaTagen"/>
                       <Dashboard  />
                     </div>
                 </>
