@@ -36,6 +36,8 @@ img_folder=os.getcwd()+'/originalImage'
 data_folder=os.getcwd()+'/generateDataset'
 test_folder=os.getcwd()+'/contourImage'
 zip_folder=os.getcwd()+'/Dataset'
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml') 
 
 def reminder():
     conn = sqlite3.connect('test.db')
@@ -174,19 +176,33 @@ def CannyEdge(img):
         return image_copy3
     except:
         return img
+def face(img):
+    try:
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+        for (x,y,w,h) in faces:
+            # To draw a rectangle in a face 
+            cv2.rectangle(img,(x,y),(x+w,y+h),(0,255, 0),20) 
+
+        return img
+    except:
+        return img
 
 
 
 def change_brightness(img):
-    value=random.randint(-5,5)
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    h, s, v = cv2.split(hsv)
-    v = cv2.add(v,value)
-    v[v > 255] = 255
-    v[v < 0] = 0
-    final_hsv = cv2.merge((h, s, v))
-    img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
-    return img  
+    try:
+        value=random.randint(-5,5)
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        h, s, v = cv2.split(hsv)
+        v = cv2.add(v,value)
+        v[v > 255] = 255
+        v[v < 0] = 0
+        final_hsv = cv2.merge((h, s, v))
+        img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+        return img  
+    except:
+        return img
 def zipdir(path, ziph):
     # ziph is zipfile handle
     for root, dirs, files in os.walk(path):
@@ -455,6 +471,8 @@ def generateDataset():
         filename=request.form['imgname']
         fileId=request.form['imgid']
         count=request.form['count']
+        options=(request.form['options']).split(',')
+        print(options,"--------------",len(options))
         original_loc = os.getcwd()+'/originalImage/'+filename
         save_loc=os.getcwd()+'/generateDataset/'+filename
         conn = sqlite3.connect('test.db')
@@ -471,24 +489,26 @@ def generateDataset():
         for i in range(int(count)):
             i=str(i)
             img = cv2.imread(original_loc)
-            options=["scale","rotate","translate","shear","reflection","color","blur","bright"]
-            for j in range(random.randint(1,5)):
-                opt=options[random.randint(0,7)]
-                if opt=="scale":
+            #options=["scale","rotate","translate","shear","reflection","color","blur","bright"]
+            for j in range(random.randint(1,3)):
+                ind=random.randint(0,len(options)-1)
+                print(ind,"$$$$$$$$$$$$$$$$$")
+                opt=options[ind]
+                if opt=="Scale":
                     img=scale(img)
-                elif opt=="rotate":
+                elif opt=="Rotate":
                     img=rotate(img)
-                elif opt=="translate":
+                elif opt=="Translate":
                     img=translate(img)
-                elif opt=="shear":
+                elif opt=="Shear":
                     img=shear(img)
-                elif opt=="reflection":
+                elif opt=="Reflection":
                     img=reflection(img)
-                elif opt=="color":
+                elif opt=="Color":
                     img=cvtColor(img)
-                elif opt=="blur":
+                elif opt=="Blur":
                     img=blur(img)
-                elif opt=="bright":
+                elif opt=="Bright":
                     img=change_brightness(img) 
             ts=(datetime.datetime.now().timestamp())
             print(ts)
@@ -545,6 +565,7 @@ def testImage():
     if request.method == "POST":
         fileId=request.form['orgId']
         filename=request.form['orgName']
+        Dtype=request.form['option']
         id=(request.form['imgId']).split(',')
         files=[]
         print(fileId,filename,id)
@@ -556,11 +577,20 @@ def testImage():
             dic[i[0]]=i[1]
         print(dic)
         shutil.rmtree(test_folder) 
+
         os.mkdir(test_folder)
+        print(id)
         for j in id:
             j=int(j)         
             img=cv2.imread(data_folder+'/'+filename+dic[j])
-            img=CannyEdge(img)
+            if Dtype=="Contour":
+                img=CannyEdge(img)
+            elif Dtype=="Face":
+                img=face(img)
+            else:
+                img=CannyEdge(img)
+                img=face(img)
+
             print(test_folder+'/'+dic[j])
             cv2.imwrite(test_folder+'/'+dic[j],img)
             time.sleep(1)

@@ -20,7 +20,7 @@ import 'react-jinke-music-player/assets/index.css'
 import MusicPlayer from './musicPlayer'
 import NotePad from './notePad'
 import musicPlayer from './musicPlayer';
-
+import { Multiselect } from 'multiselect-react-dropdown';
 class Image extends Component {
     constructor(props) {
         super(props);
@@ -29,6 +29,19 @@ class Image extends Component {
             formdata:{
                "note":""
             },
+            options: [
+                {key: 'Scale', id: 1},
+                {key: 'Rotate', id: 2},
+                {key: 'Translate', id: 3},
+                {key: 'Shear', id: 4},
+                {key: 'Reflection', id: 5},
+                {key: 'Color', id: 6},
+                {key: 'Blur', id: 7},
+                {key: 'Bright', id: 8},
+            
+            
+            ],
+            generateOptions:[],
             selectedFile:"",
             dataSet:true,
             imgInfo:true,
@@ -47,6 +60,7 @@ class Image extends Component {
     componentDidUpdate(prevProps, prevState){
         if (prevProps.curImage !== this.props.curImage) {
             this.getset(this.props.curImage)
+            this.setState({selectedData:[],contourList:[]})
      }
 
     }
@@ -74,13 +88,14 @@ class Image extends Component {
         fd.append("imgname",curImage.image)
         fd.append("imgid",curImage.id)
         fd.append("count",this.state.imgCount)
+        fd.append("options",this.state.generateOptions)
         this.setState({generateloading:true})
         this.props.distributer(fd,"generateDataset").then(response => {
              if(response.status===200){ 
                 let data=response['data']
                 this.setState({DataList:[]})
                 this.getset(this.props.curImage)
-                this.setState({generateloading:false})
+                this.setState({generateloading:false,generateModel:false,generateOptions:[]})
                 
                 console.log(data)
 
@@ -146,6 +161,7 @@ class Image extends Component {
             let fd = new FormData()
             fd.append("orgName",curImage.image)
             fd.append("orgId",curImage.id)
+            fd.append("option",this.state.contourOption)
             let ids=[]
             file.forEach(element => {
                     ids.push(element['id'])    
@@ -156,7 +172,7 @@ class Image extends Component {
              if(response.status===200){ 
                 let data=response['data']
                 console.log(response['data'])
-                this.setState({contourList:data,contourComp:true,dataSet:false,imgInfo:false})
+                this.setState({contourList:data,contourComp:true,dataSet:false,imgInfo:false,generateTestModel:false})
             this.setState({testloading:false})
 
             }else{                
@@ -202,9 +218,22 @@ class Image extends Component {
             
         })
         }
+        onSelect(selectedList, selectedItem) {
+            console.log(selectedItem)
+            let { generateOptions } = { ...this.state }
+            generateOptions.push(selectedItem.key)     
+            this.setState({ generateOptions })
+        }
+        
+        onRemove(selectedList, removedItem) {
+            let { generateOptions } = { ...this.state }
+            let ind=generateOptions.indexOf(removedItem.key)
+            generateOptions.slice(ind,1)     
+            this.setState({ generateOptions })
+        }
     
     render() {
-        let {DataList,dataSet,imgInfo,selectComp,selectedData,contourList,contourComp,imgCount,zipMail,reciever,generateloading,testloading,ziploading}={...this.state}
+        let {DataList,dataSet,generateModel,imgInfo,selectComp,contourOption,generateTestModel,selectedData,contourList,contourComp,imgCount,zipMail,reciever,generateloading,testloading,ziploading}={...this.state}
         let {curImage}={...this.props}
         return (
             <div className="row imageComponent border ">
@@ -231,20 +260,10 @@ class Image extends Component {
                                         <td className="text-primary">Date</td><td>:</td><td className=" p-1">{curImage['date']+" "+curImage['time']}</td>
                                     </div>
                                     <div className=" col-12 row text-center m-2">
-                                    <select className="form-control col-9" value={imgCount} onChange={e=>this.handleChange(e)}>
-                                        <option value="10">10</option>
-                                        <option value="20">20</option>
-                                        <option  value="50">50</option>
-    
-                                        </select>
-                                        <button disabled={generateloading} className={"col-9 c-pointer font-weight-bold btn btn-primary text-center "} onClick={e=>(this.generateSet(curImage))} >
-                                            {!generateloading?
-                                            <span>{"Generate DataSet"}</span>
-                                            :
-                                            <div class="spinner-border text-light" role="status">
-                                            <span class="visually-hidden"></span>
-                                            </div>}
-                                        </button>
+                                    <button disabled={generateloading} className={"col-9 c-pointer font-weight-bold btn btn-primary text-center "} onClick={e=>(this.setState({generateModel:true}))} >
+                                          Generate Data
+                                    </button>
+                                   
                                     </div>
                                 </div>}
 
@@ -269,7 +288,7 @@ class Image extends Component {
                </>}
                {selectedData && curImage && 
                         <div className=" btnRow ">
-                        <button className=" text-center text-light font-weight-bold btn btn-info " disabled={testloading} onClick={e=>this.test(selectedData)}>
+                        <button className=" text-center text-light font-weight-bold btn btn-info " disabled={testloading} onClick={e=>this.setState({generateTestModel:true})}>
                         {!testloading?"Test Detection":
                         <div class="spinner-border text-light" role="status">
                         <span class="visually-hidden"></span>
@@ -324,6 +343,78 @@ class Image extends Component {
                             
                             </div>
                     </div>
+
+                }
+                {generateModel && 
+                    <div className="zipMail row text-center justify-content-center">
+                           <div className="card inputCard col-5">
+                                        <div className="row text-center"><span className="h4 col-10 text-primary font-weight-bold">Filter</span><span className="col-2"><i className={"fa fa-close  fa-lg c-pointer text-danger"} onClick={e=>this.setState({generateModel:false})} ></i></span></div>
+                                        <hr></hr>
+                                        <div className="row mb-2">
+                                        <div className="col-5">Image Count</div>
+                                            <div className="col-5">
+                                            <select className="form-control" value={imgCount} onChange={e=>this.handleChange(e)}>
+                                                <option value="10">10</option>
+                                                <option value="20">20</option>
+                                                <option  value="50">50</option>
+                                            </select>
+                                        </div>
+                                        </div>
+                                        <div className="row mb-5">
+                                        <div className="col-5">Filter Options</div>
+                                            <div className="col-5">
+                                                <Multiselect
+                                                    options={this.state.options} 
+                                                    selectedValues={this.state.selectedValue}
+                                                    onSelect={(a,b)=>this.onSelect(a,b)} 
+                                                    onRemove={(a,b)=>this.onRemove(a,b)}
+                                                    displayValue="key" 
+                                                >
+                                                </Multiselect>
+                                            </div>
+                                        </div>
+                                         
+                                        <button disabled={generateloading} className={" c-pointer font-weight-bold btn btn-primary text-center "} onClick={e=>(this.generateSet(curImage))} >
+                                            {!generateloading?
+                                            <span>{"Generate DataSet"}</span>
+                                            :
+                                            <div class="spinner-border text-light" role="status">
+                                            <span class="visually-hidden"></span>
+                                            </div>}
+                                        </button>
+                            
+                            </div>
+                        </div>
+             
+
+                }
+                {generateTestModel && 
+                    <div className="zipMail row text-center justify-content-center">
+                           <div className="card inputCard col-5">
+                                        <div className="row text-center"><span className="h4 col-10 text-primary font-weight-bold">Detection Filter</span><span className="col-2"><i className={"fa fa-close  fa-lg c-pointer text-danger"} onClick={e=>this.setState({generateTestModel:false})} ></i></span></div>
+                                        <hr></hr>
+                                        
+                                        <div className="row mb-5">
+                                        <div className="col-5">Detection Option</div>
+                                            <div className="col-5">
+                                            <select className="form-control" value={contourOption} onChange={e=>this.setState({contourOption:e.target.value})}>
+                                                <option value="10">Face</option>
+                                                <option value="20">Contour</option>
+                                                <option  value="50">Both</option>
+                                            </select>
+                                        </div>
+                                        </div>
+                                       
+                                         
+                                        <button className=" text-center text-light font-weight-bold btn btn-info " disabled={testloading} onClick={e=>this.test(selectedData)}>
+                                        {!testloading?"Test Detection":
+                                        <div class="spinner-border text-light" role="status">
+                                        <span class="visually-hidden"></span>
+                                        </div>}</button>
+                            
+                            </div>
+                        </div>
+             
 
                 }
        
